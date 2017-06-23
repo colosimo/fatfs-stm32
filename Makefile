@@ -18,6 +18,7 @@ INCFLAGS = -Isource
 OBJS += source/ff.o
 OBJS += source/ffunicode.o
 OBJS += source/ffsystem.o
+OBJS += source/diskio_stm32f4xx.o
 
 all: $(LIB)
 

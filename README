@@ -1,0 +1,21 @@
+****************************************************************
+* FatFs bare-metal porting to STM32F4xx microcontroller family *
+****************************************************************
+
+This repository implements a full working porting of the popular FatFs
+library to STM32F4xx SDIO module.
+
+The library (FatFs v13) is originally committed "as is", with minor impact
+to directory structure.
+
+A sample main is implemented by copying and re-using code coming from kim-os
+project:
+https://github.com/colosimo/kim-os
+
+It is a bare-metal implementation, meaning it does not make use of any
+additional library (like STM32Cube); moreover, the code has no dependency at all
+from any external repository.
+
+Official site for FatFs is:
+http://elm-chan.org/fsw/ff/00index_e.html
+

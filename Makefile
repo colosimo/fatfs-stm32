@@ -1,7 +1,10 @@
 # 2017, Aurelio Colosimo, <aurelio@aureliocolosimo.it>
 # MIT License
 
-LIB = ff_stm32f4xx.o
+BIGOBJ = ff-stm32f4-bigobj.o
+LIB = ff_stm32f4.a
+ELF = ff_demo.elf
+BIN = ff_demo.bin
 
 # Cross compiling configuration
 CROSS_COMPILE = arm-none-eabi-
@@ -14,22 +17,35 @@ STRIP           = $(CROSS_COMPILE)strip
 CFLAGS += -mthumb -Wall -Werror -Os -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 \
     -mfloat-abi=hard -ggdb
 
-INCFLAGS = -Isource
+INCFLAGS = -Isource -Ikim/include
 OBJS += source/ff.o
 OBJS += source/ffunicode.o
 OBJS += source/ffsystem.o
 OBJS += source/diskio_stm32f4xx.o
 
-all: $(LIB)
+DEMO_OBJS += kim/init.o
+DEMO_OBJS += kim/kprint.o
+
+DEMO_OBJS += main.o
+
+all: $(BIN)
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(INCFLAGS) -o $@ $<
 
-$(LIB): $(OBJS)
-	$(LD) $(OBJS) -r -o $(LIB)
+$(BIGOBJ): $(OBJS)
+	$(LD) $(OBJS) -r -o $(BIGOBJ)
+
+$(LIB): $(BIGOBJ)
+	$(AR) rs $(LIB) $(BIGOBJ)
+
+$(ELF): $(LIB) $(DEMO_OBJS)
+	$(LD) $(DEMO_OBJS) $(LIB) -Tkim/stm32f4xx.ld -o $(ELF)
+
+$(BIN): $(ELF)
+	$(OBJCOPY) -O binary $(ELF) $(BIN)
 
 clean:
-	rm -f $(LIB)
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(DEMO_OBJS) $(BIGOBJ) $(LIB) $(ELF) $(BIN)
 
 .PHONY: clean

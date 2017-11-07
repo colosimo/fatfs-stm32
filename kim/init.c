@@ -243,22 +243,22 @@ int putchar(int c)
 {
 	if (c == '\n')
 		putchar('\r');
-	wr32(R_USART1_DR, c);
-	while (!(rd32(R_USART1_SR) & BIT6));
+	wr32(R_USART2_DR, c);
+	while (!(rd32(R_USART2_SR) & BIT6));
 	return c;
 }
 
 void init_uart(void)
 {
-	/* USART1 on PA9/PA10 */
-	gpio_func(IO(PORTA, 9), 7);
-	gpio_func(IO(PORTA, 10), 7);
-	gpio_mode(IO(PORTA, 9), PULL_NO);
-	gpio_mode(IO(PORTA, 10), PULL_NO);
+	/* USART2 on PA9/PA10 */
+	gpio_func(IO(PORTD, 5), 7);
+	gpio_func(IO(PORTD, 6), 7);
+	gpio_mode(IO(PORTD, 5), PULL_NO);
+	gpio_mode(IO(PORTD, 6), PULL_NO);
 	/* fPCLK=42MHz, br=115.2KBps, USARTDIV=22.8125, see table 80 pag. 519 */
-	wr32(R_USART1_BRR, (22 << 4) | 13);
-	or32(R_USART1_CR1, BIT13 | BIT5 | BIT3 | BIT2);
-	or32(R_NVIC_ISER(1), BIT5); /* USART1 is irq 37 */
+	wr32(R_USART2_BRR, (22 << 4) | 13);
+	or32(R_USART2_CR1, BIT13 | BIT5 | BIT3 | BIT2);
+	or32(R_NVIC_ISER(1), BIT6); /* USART2 is irq 38 */
 }
 
 void init(void)

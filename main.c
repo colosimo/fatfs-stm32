@@ -12,6 +12,9 @@ int main(void)
 {
 	FATFS fs;
 	FIL fp;
+#if (FF_FS_MINIMIZE == 0)
+	FILINFO finfo;
+#endif
 	int ret;
 	unsigned rd;
 	char buf[64];
@@ -26,6 +29,15 @@ int main(void)
 		log("Mount failed\n");
 		goto done;
 	}
+
+#if (FF_FS_MINIMIZE == 0)
+	ret = f_stat(FNAME, &finfo);
+	if (ret != FR_OK) {
+		log("could not find " FNAME "\n");
+		goto done;
+	}
+	log(FNAME " size: %d bytes\n", (uint)finfo.fsize);
+#endif
 
 	ret = f_open(&fp, FNAME, FA_OPEN_EXISTING | FA_READ);
 	if (ret != FR_OK) {

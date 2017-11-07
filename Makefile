@@ -48,4 +48,7 @@ $(BIN): $(ELF)
 clean:
 	rm -f $(OBJS) $(DEMO_OBJS) $(BIGOBJ) $(LIB) $(ELF) $(BIN)
 
+flash: $(BIN)
+	st-flash write $(BIN) 0x8000000
+
 .PHONY: clean

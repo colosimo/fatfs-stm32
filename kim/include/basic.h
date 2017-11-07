@@ -21,6 +21,8 @@
 
 #define array_size(x) (sizeof((x)) / sizeof((x)[0]))
 
+#define uint unsigned int
+
 static inline u32 abs(i32 a)
 {
 	if (a >= 0)

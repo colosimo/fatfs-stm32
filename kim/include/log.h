@@ -10,6 +10,7 @@
 #define _LOG_H_
 
 #include <kprint.h>
+#include <basic.h>
 
 #define V_NON 0 /* No log */
 #define V_CRT 1 /* Log critical */
@@ -23,23 +24,18 @@
 #endif
 
 #define crt(...) do { \
-	if (VERB >= V_CRT) {kprint("[CRT] %09d ", (uint)ticks_to_ms(k_ticks())); \
-	kprint( __VA_ARGS__);}} while(0)
+	if (VERB >= V_CRT) {kprint("[CRT] " __VA_ARGS__);}} while(0)
 
 #define err(...) do { \
-	if (VERB >= V_ERR) {kprint("[ERR] %09d ", (uint)ticks_to_ms(k_ticks())); \
-	kprint( __VA_ARGS__);}} while(0)
-
-#define wrn(...) do { \
-	if (VERB >= V_WRN) {kprint("[WRN] %09d ", (uint)ticks_to_ms(k_ticks())); \
-	kprint( __VA_ARGS__);}} while(0)
+	if (VERB >= V_ERR) {kprint("[ERR] " __VA_ARGS__);}} while(0)
 
 #define log(...) do { \
-	if (VERB >= V_LOG) {kprint("[LOG] %09d ", (uint)ticks_to_ms(k_ticks())); \
-	kprint( __VA_ARGS__);}} while(0)
+	if (VERB >= V_LOG) {kprint("[LOG] " __VA_ARGS__);}} while(0)
+
+#define wrn(...) do { \
+	if (VERB >= V_WRN) {kprint("[WRN] " __VA_ARGS__);}} while(0)
 
 #define dbg(...) do { \
-	if (VERB >= V_DBG) {kprint("[DBG] %09d ", (uint)ticks_to_ms(k_ticks())); \
-	kprint( __VA_ARGS__);}} while(0)
+	if (VERB >= V_DBG) {kprint("[DBG] " __VA_ARGS__);}} while(0)
 
 #endif /* _LOG_H_ */

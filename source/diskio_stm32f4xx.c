@@ -150,12 +150,12 @@ DSTATUS disk_initialize(BYTE pdrv)
 	/* DWORD clkcr; */
 	int i;
 
-	dstatus = STA_NODISK;
+	dstatus = STA_NOINIT;
 
 	/* SDIO_CD: input gpio, card detect */
-	gpio_func(IO(PORTC, 7), 0);
-	gpio_dir(IO(PORTC, 7), 0);
-	gpio_mode(IO(PORTC, 7), PULL_NO);
+	gpio_func(IO(PORTB, 15), 0);
+	gpio_dir(IO(PORTB, 15), 0);
+	gpio_mode(IO(PORTB, 15), PULL_NO);
 
 	/* SDIO_D0 */
 	gpio_func(IO(PORTC, 8), 12);
@@ -182,9 +182,12 @@ DSTATUS disk_initialize(BYTE pdrv)
 	gpio_mode(IO(PORTD, 2), PULL_NO);
 
 	dstatus &= ~STA_NOINIT;
-	if (!gpio_rd(IO(PORTC, 7)))
+
+	if (gpio_rd(IO(PORTB, 15)))
 		dstatus |= STA_NODISK;
-	log("SD card %spresent\n", dstatus & STA_NODISK ? "" : "not ");
+
+	if (dstatus & STA_NODISK)
+		return RES_OK;
 
 	or32(RCC_APB2ENR, BIT11);
 	wr32(R_SDIO_CLKCR, BIT8 | ((42000 / 400) - 2)); /* clk set to 400kHz */

@@ -19,3 +19,5 @@ from any external repository.
 Official site for FatFs is:
 http://elm-chan.org/fsw/ff/00index_e.html
 
+The algorithm for disk_initialize is inspired on the following code:
+https://github.com/maskedw/fatfs/blob/master/lpc23xx/mci_23xx.c

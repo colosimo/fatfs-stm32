@@ -273,8 +273,16 @@ DSTATUS disk_initialize(BYTE pdrv)
 			goto fail;
 	}
 
-	/* FIXME set 4bit bus mode if card_type is CT_SDC */
-	/* FIXME set clock to 14Mhz (clkcr |= 3) */
+	if (card_type & CT_SDC) {
+		/* Set wide bus */
+		if (!send_cmd(ACMD(6), 2, RESP_SHORT, resp) || (resp[0] & 0xfdf90000))
+			goto fail;
+		or32(R_SDIO_CLKCR, BIT11);
+	}
+
+	/* increase clock up to 4MHz */
+	and32(R_SDIO_CLKCR, ~0xff);
+	or32(R_SDIO_CLKCR, 10);
 
 	dstatus &= ~STA_NOINIT;
 

@@ -368,3 +368,85 @@ DRESULT disk_read(BYTE pdrv, BYTE* buf, DWORD sector, UINT count)
 
 	return rd32(R_SDIO_DCOUNT) ? RES_ERROR : RES_OK;
 }
+
+DRESULT disk_write(BYTE pdrv, const BYTE* buf, DWORD sector, UINT count)
+{
+	DWORD resp;
+	int cmd;
+	int wr;
+	DWORD t;
+	DWORD sta;
+	DWORD data;
+
+	if (count < 1 || count > 127)
+		return RES_PARERR;
+
+	if (dstatus & STA_NOINIT)
+		return RES_NOTRDY;
+
+	/* FIXME Check Write Protect Pin, if any */
+
+	if (!(card_type & CT_BLOCK))
+		sector *= 512;
+
+	if (!check_tran(500))
+		return RES_ERROR;
+
+	if (count == 1) /* Single block write */
+		cmd = 24;
+	else { /* Multiple block write */
+		cmd = (card_type & CT_SDC) ? ACMD(23) : 23;
+		if (!send_cmd(cmd, count, RESP_SHORT, &resp) || (resp & 0xC0580000))
+				return RES_ERROR;
+		cmd = 25;
+	}
+
+	t = k_ticks();
+	wr = 0;
+	wr32(R_SDIO_DCTRL, (0b1001 << 4));
+	wr32(R_SDIO_DLEN, 512 * count);
+	wr32(R_SDIO_DTIMER, 400000);
+
+	if (!send_cmd(cmd, sector, RESP_SHORT, &resp) || (resp & 0xC0580000)) {
+		err("%s %d\n", __func__, __LINE__);
+		return RES_ERROR;
+	}
+
+	wr32(R_SDIO_ICR, 0xff);
+	or32(R_SDIO_DCTRL, BIT0);
+
+	while (k_elapsed(t) < ms_to_ticks(1000)) {
+
+		sta = rd32(R_SDIO_STA);
+
+		if (sta & (BIT3 | BIT9)) {
+			err("%s SDIO_STA: %08x\n", __func__, (uint)sta);
+			break;
+		}
+
+		if (sta & BIT16)
+			continue;
+
+		data = buf[wr++];
+		data = data | (((DWORD)buf[wr++]) << 8);
+		data = data | (((DWORD)buf[wr++]) << 16);
+		data = data | (((DWORD)buf[wr++]) << 24);
+
+		wr32(R_SDIO_FIFO, data);
+
+		if (wr >= 512 * count) {
+			break;
+		}
+	}
+
+	if (wr < 512 * count || (cmd == 25 && (card_type & CT_SDC)))
+		send_cmd(12, 0, RESP_SHORT, &resp);
+
+	return wr < 512 * count ? RES_ERROR : RES_OK;
+}
+
+DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void *buff)
+{
+	/* Dummy, unneeded */
+	return RES_ERROR;
+}

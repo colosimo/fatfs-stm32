@@ -250,7 +250,7 @@ int putchar(int c)
 
 void init_uart(void)
 {
-	/* USART2 on PA9/PA10 */
+	/* USART2 on PD5/PD6 */
 	gpio_func(IO(PORTD, 5), 7);
 	gpio_func(IO(PORTD, 6), 7);
 	gpio_mode(IO(PORTD, 5), PULL_NO);

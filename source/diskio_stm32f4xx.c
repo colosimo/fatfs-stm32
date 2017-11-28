@@ -1,5 +1,7 @@
 /*
  * 2017, Aurelio Colosimo <aurelio@aureliocolosimo.it>
+ * This file is part of fatfs-stm32f4:
+ * https://github.com/colosimo/fatfs-stm32
  * MIT License
  */
 

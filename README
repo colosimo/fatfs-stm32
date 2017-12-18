@@ -3,7 +3,9 @@
 ****************************************************************
 
 This repository implements a full working porting of the popular FatFs
-library to STM32F4xx SDIO module.
+library to STM32F4xx SDIO module. The official GitHub reference repository is:
+
+https://github.com/colosimo/fatfs-stm32
 
 The library (FatFs v13) is originally committed "as is", with minor impact
 to directory structure.

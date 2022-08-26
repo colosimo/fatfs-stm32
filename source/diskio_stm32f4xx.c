@@ -76,8 +76,6 @@ static int send_cmd(WORD idx, DWORD arg, int resp_type, DWORD *buf)
 
 	idx &= 0x3F;
 	wr32(R_SDIO_ICR, 0xc007ff);
-	wr32(R_SDIO_CMD, 0);
-	while (rd32(R_SDIO_STA) & BIT11);
 
 	wr32(R_SDIO_ARG, arg);
 
